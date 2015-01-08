@@ -31,7 +31,7 @@ public class SearchResultItemView extends RelativeLayout {
     }
 
     public void setItem(SearchResult item, Picasso picasso) {
-        picasso.load(item.getMainImage().getUrl170())
+        picasso.load(item.getMainImage().getUrl570())
                 .into(itemImage);
 
         itemTitle.setText(item.getTitle());

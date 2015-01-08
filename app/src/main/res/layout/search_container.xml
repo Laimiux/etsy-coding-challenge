@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <include
         android:id="@+id/search_field"
         layout="@layout/search_field"/>
@@ -30,10 +29,14 @@
         android:layout_below="@id/search_field"
         android:gravity="center"/>
 
-    <ListView
+    <com.etsy.android.grid.StaggeredGridView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/search_result_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/search_field"
-        android:listSelector="@android:color/transparent"/>
+        app:item_margin="8dp"
+        app:column_count="@integer/grid_column_count" />
+
 </com.example.etsysearch.ui.SearchContainer>

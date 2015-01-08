@@ -12,6 +12,7 @@ import retrofit.converter.JacksonConverter;
 public class EtsyHelper {
     public static final String ENDPOINT = "https://api.etsy.com/v2";
 
+    // Thread-safe lazy initialization
     private static class Holder {
        private static EtsyHelper helper = new EtsyHelper();
     }
@@ -22,17 +23,13 @@ public class EtsyHelper {
 
     private EtsyHelper() {
         // Create our Converter
-        ObjectMapper objectMapper = new ObjectMapper();
-//        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
-
-        JacksonConverter jacksonConverter = new JacksonConverter(objectMapper);
+        JacksonConverter jacksonConverter = new JacksonConverter(new ObjectMapper());
 
         adapter = new RestAdapter.Builder()
                 .setLogLevel(RestAdapter.LogLevel.BASIC)
                 .setConverter(jacksonConverter)
                 .setEndpoint(ENDPOINT)
                 .build();
-
     }
 
 

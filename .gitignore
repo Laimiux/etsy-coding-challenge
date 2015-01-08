@@ -34,3 +34,8 @@ local.properties
 *.ipr
 *~
 *.swp
+
+# Gradle
+.gradle/
+build/
+

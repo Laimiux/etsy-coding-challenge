@@ -21,6 +21,7 @@ public class MainImage {
     @JsonProperty("url_fullxfull")
     private String urlFull;
 
+
     public MainImage() {
     }
 

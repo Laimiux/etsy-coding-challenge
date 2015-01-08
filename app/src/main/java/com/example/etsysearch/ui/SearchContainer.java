@@ -6,16 +6,20 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.etsy.android.grid.StaggeredGridView;
 import com.example.etsysearch.R;
+import com.example.etsysearch.data.api.CachedEtsyService;
 import com.example.etsysearch.data.api.EtsyHelper;
 import com.example.etsysearch.data.api.EtsyService;
 import com.example.etsysearch.data.model.SearchQuery;
+import com.example.etsysearch.data.model.SearchResult;
 import com.example.etsysearch.data.model.SearchResults;
 import com.squareup.picasso.Picasso;
+
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -33,14 +37,15 @@ import rx.subjects.BehaviorSubject;
 public class SearchContainer extends RelativeLayout {
     @InjectView(R.id.search_field) SearchField searchField;
     @InjectView(R.id.search_loading_indicator) View searchLoadingIndicator;
-    @InjectView(R.id.search_result_list) ListView searchResultList;
+    @InjectView(R.id.search_result_list) StaggeredGridView searchResultList;
     @InjectView(R.id.empty_search_list_view) TextView emptySearchTextView;
 
-    final private EtsyService etsyService;
+    final private CachedEtsyService etsyService;
     final private SearchResultAdapter searchResultAdapter;
 
     // Mutable state
     private boolean isLoading;
+    private boolean hasNextPage;
     private SearchQuery lastQuery;
 
     // Observables
@@ -54,7 +59,7 @@ public class SearchContainer extends RelativeLayout {
     public SearchContainer(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        etsyService = EtsyHelper.getEtsyService();
+        etsyService = CachedEtsyService.getCachedEtsyService(EtsyHelper.getEtsyService());
         searchResultAdapter = new SearchResultAdapter(context, Picasso.with(context));
     }
 
@@ -125,8 +130,7 @@ public class SearchContainer extends RelativeLayout {
     }
 
     private void loadNextPage() {
-        // TODO check that there is next page
-        if (lastQuery != null && !isLoading) {
+        if (lastQuery != null && hasNextPage && !isLoading) {
             Log.d("SearchContainer", "loadNextPage()");
 
             final SearchQuery searchQuery = lastQuery.setPage(lastQuery.getPage() + 1);
@@ -148,20 +152,24 @@ public class SearchContainer extends RelativeLayout {
 
         clearNetworkRequest();
 
+        // todo should be moved out of here to avoid failure on rotation.
         // We assert that no other search request is going on at the same time
-        searchNetworkRequestSubscription = etsyService.search(searchQuery.getQueryMap())
+        searchNetworkRequestSubscription = etsyService.search(searchQuery)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<SearchResults>() {
                     @Override public void call(SearchResults searchResults) {
+
+                        final List<SearchResult> results = searchResults.getResults();
                         if (isNewSearchTerm) { // New search query
                             searchField.setEnabled(true);
-                            searchResultAdapter.setItems(searchResults.getResults());
+                            searchResultAdapter.setItems(results);
                             searchLoadingIndicator.setVisibility(View.GONE);
                         } else { // new page of search query
-                            searchResultAdapter.addAll(searchResults.getResults());
+                            searchResultAdapter.addAll(results);
                         }
 
+                        hasNextPage = searchResults.getPagination().getNextPage() != null;
                         lastQuery = searchQuery;
 
                         setLoading(false);
@@ -185,7 +193,7 @@ public class SearchContainer extends RelativeLayout {
 
 
     private void clearNetworkRequest() {
-        if(searchNetworkRequestSubscription != null) {
+        if (searchNetworkRequestSubscription != null) {
             searchNetworkRequestSubscription.unsubscribe();
             searchNetworkRequestSubscription = null;
         }

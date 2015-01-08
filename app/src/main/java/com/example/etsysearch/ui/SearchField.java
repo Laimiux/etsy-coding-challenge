@@ -1,5 +1,6 @@
 package com.example.etsysearch.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -29,15 +31,19 @@ public class SearchField extends RelativeLayout {
     @InjectView(R.id.search_query_view) EditText searchQueryView;
     @InjectView(R.id.search_button) Button searchButton;
 
-
     // Event helper
     final private PublishSubject<SearchQuery> searchEventPublishSubject = PublishSubject.create();
 
     // Subscriptions
     private Subscription searchQueryLengthSubscription;
+    private Subscription searchIMESubscription;
 
     public SearchField(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        if(!(context instanceof Activity)) {
+            throw new IllegalStateException("Requires to have activity context");
+        }
     }
 
     @Override protected void onFinishInflate() {
@@ -61,12 +67,12 @@ public class SearchField extends RelativeLayout {
                     }
                 });
 
-        RxUtils.trackAction(searchQueryView, EditorInfo.IME_ACTION_SEARCH)
-            .subscribe(new Action1<KeyEvent>() {
-                @Override public void call(KeyEvent keyEvent) {
-                    searchClick();
-                }
-            });
+        searchIMESubscription = RxUtils.trackAction(searchQueryView, EditorInfo.IME_ACTION_SEARCH)
+                .subscribe(new Action1<KeyEvent>() {
+                    @Override public void call(KeyEvent keyEvent) {
+                        searchClick();
+                    }
+                });
     }
 
     @Override protected void onDetachedFromWindow() {
@@ -76,6 +82,9 @@ public class SearchField extends RelativeLayout {
         searchQueryLengthSubscription.unsubscribe();
         searchQueryLengthSubscription = null;
 
+        searchIMESubscription.unsubscribe();
+        searchIMESubscription = null;
+
     }
 
     private void searchClick() {
@@ -83,6 +92,7 @@ public class SearchField extends RelativeLayout {
 
         if (!TextUtils.isEmpty(query)) {
             Log.d("SearchField", "Search " + query);
+            hideKeyboard();
             searchEventPublishSubject.onNext(new SearchQuery(query.toString()));
         } else {
             Toast.makeText(getContext(), R.string.enter_search_term, Toast.LENGTH_LONG).show();
@@ -115,6 +125,16 @@ public class SearchField extends RelativeLayout {
         searchQueryView.setText(ss.searchTerm);
     }
 
+    private void hideKeyboard() {
+        Activity activity = (Activity) getContext();
+
+        if (activity != null && activity.getCurrentFocus() != null) {
+            InputMethodManager inputManager = (InputMethodManager)
+                    activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(),
+                    InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
 
     static class SavedState extends BaseSavedState {
         final String searchTerm;

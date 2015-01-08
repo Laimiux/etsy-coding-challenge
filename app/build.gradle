@@ -39,4 +39,8 @@ dependencies {
     compile 'com.squareup.retrofit:retrofit:1.8.0'
     compile 'com.squareup.retrofit:converter-jackson:1.6.1'
     compile 'com.squareup.picasso:picasso:2.4.0'
+
+
+    // Use Etsy grid for Etsy project (how else? :D)
+    compile 'com.etsy.android.grid:library:1.0.5' // see changelog
 }

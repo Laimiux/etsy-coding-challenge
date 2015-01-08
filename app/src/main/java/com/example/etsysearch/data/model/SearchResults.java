@@ -10,11 +10,18 @@ public class SearchResults {
     @JsonProperty("results")
     private List<SearchResult> results;
 
+    @JsonProperty("pagination")
+    private Pagination pagination;
+
     // Empty constructor for jackson json deserialization
     public SearchResults() {
     }
 
     public List<SearchResult> getResults() {
         return results;
+    }
+
+    public Pagination getPagination() {
+        return pagination;
     }
 }
