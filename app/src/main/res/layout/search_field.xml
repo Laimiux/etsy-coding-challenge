@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.example.etsysearch.ui.SearchField
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <Button
+        android:id="@+id/search_button"
+        android:layout_width="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:text="@string/search"
+        android:layout_height="@dimen/search_field_height"/>
+
+    <EditText
+        android:id="@+id/search_query_view"
+        android:layout_toLeftOf="@id/search_button"
+        android:layout_toStartOf="@id/search_button"
+        android:layout_width="match_parent"
+        android:inputType="text"
+        android:hint="@string/search_query_hint"
+        android:imeOptions="actionSearch"
+        android:layout_height="@dimen/search_field_height"/>
+
+</com.example.etsysearch.ui.SearchField>

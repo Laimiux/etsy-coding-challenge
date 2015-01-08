@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/Users/laimiux/.gradle/caches/modules-2/files-2.1/io.reactivex/rxjava/1.0.4/a607b0e12d2de769dc219e00b60a9b3d9e730d/rxjava-1.0.4.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="00a607b0e12d2de769dc219e00b60a9b3d9e730d">
+        <dex dex="/Users/laimiux/androidapps/EtsySearch/app/build/intermediates/pre-dexed/debug/rxjava-1.0.4-454df7167c7789117fffd18b6ccbd39e61921c14.jar" />
+    </item>
+    <item
+        jar="/Users/laimiux/.gradle/caches/modules-2/files-2.1/com.squareup.retrofit/retrofit/1.8.0/a517f29ed06be2b2879524fcd94b6e9b36e2e0b5/retrofit-1.8.0.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="a517f29ed06be2b2879524fcd94b6e9b36e2e0b5">
+        <dex dex="/Users/laimiux/androidapps/EtsySearch/app/build/intermediates/pre-dexed/debug/retrofit-1.8.0-d66779139559c2397c0b6fabf741d5fd9aab768f.jar" />
+    </item>
+    <item
+        jar="/Users/laimiux/.gradle/caches/modules-2/files-2.1/io.reactivex/rxandroid/0.24.0/42dab493b8f74b164e082f281480c9d493ff89da/rxandroid-0.24.0.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="42dab493b8f74b164e082f281480c9d493ff89da">
+        <dex dex="/Users/laimiux/androidapps/EtsySearch/app/build/intermediates/pre-dexed/debug/rxandroid-0.24.0-f250431ba802addf5216f332857337dd0ba5bf03.jar" />
+    </item>
+    <item
+        jar="/Users/laimiux/androidapps/EtsySearch/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.2/classes.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="7ae2d38807a43b2f2185ff4089a92c790b579e54">
+        <dex dex="/Users/laimiux/androidapps/EtsySearch/app/build/intermediates/pre-dexed/debug/classes-17858a955d8d48780ed65950397a2accc3ec413d.jar" />
+    </item>
+    <item
+        jar="/Users/laimiux/androidapps/EtsySearch/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.2/classes.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="d1bf02de1c56d942e7a9d093b8610ba1ef4128e3">
+        <dex dex="/Users/laimiux/androidapps/EtsySearch/app/build/intermediates/pre-dexed/debug/classes-ac3b19327262ccec1653bcc893155d42af262f6b.jar" />
+    </item>
+    <item
+        jar="/Users/laimiux/.gradle/caches/modules-2/files-2.1/com.squareup.picasso/picasso/2.4.0/f36d2d4e3a36b3259aaf9d004d29b4cdc6c1bfb2/picasso-2.4.0.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="f36d2d4e3a36b3259aaf9d004d29b4cdc6c1bfb2">
+        <dex dex="/Users/laimiux/androidapps/EtsySearch/app/build/intermediates/pre-dexed/debug/picasso-2.4.0-4b07d37b29ef4262baa46cedca2992348c8932b7.jar" />
+    </item>
+    <item
+        jar="/Users/laimiux/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.4.1/f07c773f7b3a03c3801d405cadbdc93f7548e321/jackson-databind-2.4.1.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="f07c773f7b3a03c3801d405cadbdc93f7548e321">
+        <dex dex="/Users/laimiux/androidapps/EtsySearch/app/build/intermediates/pre-dexed/debug/jackson-databind-2.4.1-7e6a344351754209518fcb2f973f589467ef5142.jar" />
+    </item>
+    <item
+        jar="/Users/laimiux/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.4.0/d6a66c7a5f01cf500377bd669507a08cfeba882a/jackson-annotations-2.4.0.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="d6a66c7a5f01cf500377bd669507a08cfeba882a">
+        <dex dex="/Users/laimiux/androidapps/EtsySearch/app/build/intermediates/pre-dexed/debug/jackson-annotations-2.4.0-3cafe973090f8c2c3a3526decc3c56b321361505.jar" />
+    </item>
+    <item
+        jar="/Users/laimiux/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.4.1/b130bcfb5a9c410c3cbd2e0adec9437e69a39e2c/jackson-core-2.4.1.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="b130bcfb5a9c410c3cbd2e0adec9437e69a39e2c">
+        <dex dex="/Users/laimiux/androidapps/EtsySearch/app/build/intermediates/pre-dexed/debug/jackson-core-2.4.1-f3ca38942f75ef6c524814c0c5306d05dcfc2a9a.jar" />
+    </item>
+    <item
+        jar="/Users/laimiux/android-sdk/extras/android/m2repository/com/android/support/support-annotations/21.0.2/support-annotations-21.0.2.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="99373741f99a0556ee293c41e8faa1ca3ae8a4e6">
+        <dex dex="/Users/laimiux/androidapps/EtsySearch/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.2-71f0f7ef3ea9ea5f6a45ff2e3422543420974214.jar" />
+    </item>
+    <item
+        jar="/Users/laimiux/androidapps/EtsySearch/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.2/libs/internal_impl-21.0.2.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="962e8b12569c56dbdcf8367eb4eac8bb129cd18f">
+        <dex dex="/Users/laimiux/androidapps/EtsySearch/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.2-ecc92449011dcc6e0a46a994671c5b564bf99e92.jar" />
+    </item>
+    <item
+        jar="/Users/laimiux/.gradle/caches/modules-2/files-2.1/com.jakewharton/butterknife/6.0.0/3a10b25b6820e19102e118711afe6a66c0bae123/butterknife-6.0.0.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="3a10b25b6820e19102e118711afe6a66c0bae123">
+        <dex dex="/Users/laimiux/androidapps/EtsySearch/app/build/intermediates/pre-dexed/debug/butterknife-6.0.0-4995cfc1467d47942d7afb9496f231ca119772b9.jar" />
+    </item>
+    <item
+        jar="/Users/laimiux/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.3/5fc52c41ef0239d1093a1eb7c3697036183677ce/gson-2.3.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="5fc52c41ef0239d1093a1eb7c3697036183677ce">
+        <dex dex="/Users/laimiux/androidapps/EtsySearch/app/build/intermediates/pre-dexed/debug/gson-2.3-756099defb51213e89bab6ad4ab35ca05390383b.jar" />
+    </item>
+    <item
+        jar="/Users/laimiux/.gradle/caches/modules-2/files-2.1/com.squareup.retrofit/converter-jackson/1.6.1/69b73fb5c75ba80d44fb2db6ebe8168a4f5f74c9/converter-jackson-1.6.1.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="69b73fb5c75ba80d44fb2db6ebe8168a4f5f74c9">
+        <dex dex="/Users/laimiux/androidapps/EtsySearch/app/build/intermediates/pre-dexed/debug/converter-jackson-1.6.1-9f3fc6586eb117f276d186acb0782806d275d014.jar" />
+    </item>
+
+</items>
