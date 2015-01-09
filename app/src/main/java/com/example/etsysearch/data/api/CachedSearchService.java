@@ -26,11 +26,11 @@ public class CachedSearchService {
      */
     public Observable<SearchResults> search(SearchQuery searchQuery) {
         if (requests.containsKey(searchQuery)) {
+            // Already request in progress, so return that
             return requests.get(searchQuery);
         }
 
-
-        // We only keep for a single query results
+        // We only keep for a single query results (if search term changes, we clear previous observables)
         if (searchQuery.getPage() == 1) {
             requests.clear();
         }
