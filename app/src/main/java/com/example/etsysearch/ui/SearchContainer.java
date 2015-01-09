@@ -258,15 +258,15 @@ public class SearchContainer extends RelativeLayout {
                             searchResultGrid.onRestoreInstanceState(ss.gridState);
 
                             // Restore last loading thing
-                            if(currentlyLoading != null) {
-                                performSearch(currentlyLoading);
+                            if(ss.currentlyLoading != null) {
+                                performSearch(ss.currentlyLoading);
                             }
                         }
                     });
         } else {
             // Restore last loading thing
-            if(currentlyLoading != null) {
-                performSearch(currentlyLoading);
+            if(ss.currentlyLoading != null) {
+                performSearch(ss.currentlyLoading);
             }
         }
     }
