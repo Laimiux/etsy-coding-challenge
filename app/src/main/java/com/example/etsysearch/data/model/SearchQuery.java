@@ -40,6 +40,10 @@ public class SearchQuery implements Parcelable {
         return new SearchQuery(keywords, page+1);
     }
 
+    public SearchQuery withPage(int page) {
+        return new SearchQuery(keywords, page);
+    }
+
     public Map<String, Object> getQueryMap() {
         // todo doesn't really belong here
         Map<String, Object> queryMap = new HashMap<>();

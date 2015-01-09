@@ -3,8 +3,6 @@ package com.example.etsysearch.ui;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v4.os.ParcelableCompat;
-import android.support.v4.os.ParcelableCompatCreatorCallbacks;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +19,7 @@ import com.example.etsysearch.data.model.SearchResult;
 import com.example.etsysearch.data.model.SearchResults;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -29,6 +28,7 @@ import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
@@ -156,9 +156,7 @@ public class SearchContainer extends RelativeLayout {
 
         // todo should be moved out of here to avoid failure on rotation.
         // We assert that no other search request is going on at the same time
-        searchNetworkRequestSubscription = etsyService.search(searchQuery)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        searchNetworkRequestSubscription = getSearchResultsObservable(searchQuery)
                 .subscribe(new Action1<SearchResults>() {
                     @Override public void call(SearchResults searchResults) {
 
@@ -188,6 +186,12 @@ public class SearchContainer extends RelativeLayout {
                 });
     }
 
+    private Observable<SearchResults> getSearchResultsObservable(SearchQuery searchQuery) {
+        return etsyService.search(searchQuery)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
     private void setLoading(boolean isLoading) {
         this.isLoading = isLoading;
         observeLoading.onNext(isLoading);
@@ -207,19 +211,39 @@ public class SearchContainer extends RelativeLayout {
 
     @Override protected void onRestoreInstanceState(Parcelable state) {
         //begin boilerplate code so parent classes can restore state
-        if(!(state instanceof SavedState)) {
+        if (!(state instanceof SavedState)) {
             super.onRestoreInstanceState(state);
             return;
         }
 
-        SavedState ss = (SavedState)state;
+        SavedState ss = (SavedState) state;
         super.onRestoreInstanceState(ss.getSuperState());
 
         hasNextPage = ss.hasNextPage;
         lastQuery = ss.lastQuery;
 
-        if(lastQuery != null) {
+        if (lastQuery != null) {
             // Find old list
+            Observable.range(1, lastQuery.getPage())
+                    .flatMap(new Func1<Integer, Observable<SearchResults>>() {
+                        @Override public Observable<SearchResults> call(Integer page) {
+                            return getSearchResultsObservable(lastQuery.withPage(page));
+                        }
+                    }).map(new Func1<SearchResults, List<SearchResult>>() {
+                @Override public List<SearchResult> call(SearchResults searchResults) {
+                    return searchResults.getResults();
+                }
+            }).reduce(new ArrayList<SearchResult>(), new Func2<ArrayList<SearchResult>, List<SearchResult>, ArrayList<SearchResult>>() {
+                @Override
+                public ArrayList<SearchResult> call(ArrayList<SearchResult> concatResults, List<SearchResult> searchResults) {
+                    concatResults.addAll(searchResults);
+                    return concatResults;
+                }
+            }).subscribe(new Action1<ArrayList<SearchResult>>() {
+                @Override public void call(ArrayList<SearchResult> searchResults) {
+                    searchResultAdapter.setItems(searchResults);
+                }
+            });
         }
     }
 
@@ -228,11 +252,10 @@ public class SearchContainer extends RelativeLayout {
         final boolean hasNextPage;
         final SearchQuery lastQuery;
 
-
-        public SavedState(Parcel source, ClassLoader loader) {
+        public SavedState(Parcel source) {
             super(source);
             hasNextPage = source.readInt() == 1;
-            lastQuery = source.readParcelable(loader);
+            lastQuery = source.readParcelable(SearchQuery.class.getClassLoader());
         }
 
         public SavedState(Parcelable superState, boolean hasNextPage, SearchQuery lastQuery) {
@@ -248,13 +271,13 @@ public class SearchContainer extends RelativeLayout {
         }
     }
 
-    public static final Parcelable.Creator<SavedState> CREATOR = ParcelableCompat.newCreator(new ParcelableCompatCreatorCallbacks<SavedState>() {
-        @Override public SavedState createFromParcel(Parcel in, ClassLoader loader) {
-            return new SavedState(in, loader);
+    public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
+        @Override public SavedState createFromParcel(Parcel source) {
+            return new SavedState(source);
         }
 
         @Override public SavedState[] newArray(int size) {
             return new SavedState[size];
         }
-    });
+    };
 }
