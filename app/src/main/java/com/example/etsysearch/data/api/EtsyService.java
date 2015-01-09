@@ -10,7 +10,6 @@ import rx.Observable;
 
 public interface EtsyService {
 
-
     @GET("/listings/active")
     Observable<SearchResults> search(@QueryMap Map<String, Object> queryMap);
 }

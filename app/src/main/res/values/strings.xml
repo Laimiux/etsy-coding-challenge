@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">EtsySearch</string>
+    <string name="app_name">Etsy Search</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="search">Search</string>
     <string name="enter_search_term">Enter search terms!</string>
     <string name="search_something">Search something!</string>
-    <string name="no_results_found">No results were found...</string>
+    <string name="no_results_found">No results were found…</string>
     <string name="search_query_hint">What are you looking for?</string>
 
 </resources>
