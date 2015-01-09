@@ -26,6 +26,7 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 
+// Note: Expand on this view to add more filters for search
 public class SearchField extends RelativeLayout {
     @InjectView(R.id.search_query_view) EditText searchQueryView;
     @InjectView(R.id.search_button) Button searchButton;
