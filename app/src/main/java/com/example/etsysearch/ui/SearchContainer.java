@@ -34,7 +34,7 @@ import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
 
 /**
- * Contains query view and list results.
+ * Contains query view and result view.
  */
 public class SearchContainer extends RelativeLayout {
     @InjectView(R.id.search_field) SearchField searchField;
