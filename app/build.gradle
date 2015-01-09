@@ -42,5 +42,5 @@ dependencies {
 
 
     // Use Etsy grid for Etsy project (how else? :D)
-    compile 'com.etsy.android.grid:library:1.0.5' // see changelog
+    compile 'com.etsy.android.grid:library:1.0.5'
 }
