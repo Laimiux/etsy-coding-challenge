@@ -6,7 +6,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -42,7 +41,7 @@ public class SearchField extends RelativeLayout {
         super(context, attrs);
 
         // We need access to activity to close the keyboard.
-        if(!(context instanceof Activity)) {
+        if (!(context instanceof Activity)) {
             throw new IllegalStateException("Requires to have activity context");
         }
     }
@@ -115,12 +114,12 @@ public class SearchField extends RelativeLayout {
 
     @Override protected void onRestoreInstanceState(Parcelable state) {
         //begin boilerplate code so parent classes can restore state
-        if(!(state instanceof SavedState)) {
+        if (!(state instanceof SavedState)) {
             super.onRestoreInstanceState(state);
             return;
         }
 
-        SavedState ss = (SavedState)state;
+        SavedState ss = (SavedState) state;
         super.onRestoreInstanceState(ss.getSuperState());
 
         searchQueryView.setText(ss.searchTerm);
@@ -163,6 +162,7 @@ public class SearchField extends RelativeLayout {
                     public SavedState createFromParcel(Parcel in) {
                         return new SavedState(in);
                     }
+
                     public SavedState[] newArray(int size) {
                         return new SavedState[size];
                     }

@@ -59,6 +59,26 @@ public class SearchQuery implements Parcelable {
         return page;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SearchQuery that = (SearchQuery) o;
+
+        if (!keywords.equals(that.keywords)) return false;
+        if (!page.equals(that.page)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = keywords.hashCode();
+        result = 31 * result + page.hashCode();
+        return result;
+    }
+
     @Override public int describeContents() {
         return 0;
     }

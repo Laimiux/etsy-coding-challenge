@@ -39,7 +39,7 @@ import rx.subjects.BehaviorSubject;
 public class SearchContainer extends RelativeLayout {
     @InjectView(R.id.search_field) SearchField searchField;
     @InjectView(R.id.search_loading_indicator) View searchLoadingIndicator;
-    @InjectView(R.id.search_result_list) StaggeredGridView searchResultList;
+    @InjectView(R.id.search_result_list) StaggeredGridView searchResultGrid;
     @InjectView(R.id.empty_search_list_view) TextView emptySearchTextView;
 
     final private CachedSearchService etsyService;
@@ -69,10 +69,10 @@ public class SearchContainer extends RelativeLayout {
         super.onFinishInflate();
         ButterKnife.inject(this);
 
-        searchResultList.setAdapter(searchResultAdapter);
+        searchResultGrid.setAdapter(searchResultAdapter);
 
         // Load new items when at the bottom of the page.
-        searchResultList.setOnScrollListener(new AbsListView.OnScrollListener() {
+        searchResultGrid.setOnScrollListener(new AbsListView.OnScrollListener() {
             // todo decide what's the number of items should be
             int itemsLeft = 8; // Items left before loading more
 
@@ -150,11 +150,13 @@ public class SearchContainer extends RelativeLayout {
             searchField.setEnabled(false);
             searchLoadingIndicator.setVisibility(View.VISIBLE);
             searchResultAdapter.clear();
+
+            // Reset last query
+            lastQuery = null;
         }
 
         clearNetworkRequest();
 
-        // todo should be moved out of here to avoid failure on rotation.
         // We assert that no other search request is going on at the same time
         searchNetworkRequestSubscription = getSearchResultsObservable(searchQuery)
                 .subscribe(new Action1<SearchResults>() {
@@ -206,6 +208,9 @@ public class SearchContainer extends RelativeLayout {
     }
 
     @Override protected Parcelable onSaveInstanceState() {
+        int index = searchResultGrid.getFirstVisiblePosition();
+        View v = searchResultGrid.getChildAt(0);
+        int top = (v == null) ? 0 : (v.getTop() - searchResultGrid.getPaddingTop());
         return new SavedState(super.onSaveInstanceState(), hasNextPage, lastQuery);
     }
 
@@ -216,14 +221,14 @@ public class SearchContainer extends RelativeLayout {
             return;
         }
 
-        SavedState ss = (SavedState) state;
+        final SavedState ss = (SavedState) state;
         super.onRestoreInstanceState(ss.getSuperState());
 
         hasNextPage = ss.hasNextPage;
         lastQuery = ss.lastQuery;
 
         if (lastQuery != null) {
-            // Find old list
+            // Restore old list
             Observable.range(1, lastQuery.getPage())
                     .flatMap(new Func1<Integer, Observable<SearchResults>>() {
                         @Override public Observable<SearchResults> call(Integer page) {
@@ -245,6 +250,8 @@ public class SearchContainer extends RelativeLayout {
                 }
             });
         }
+
+        // Restore last loading thing
     }
 
 
