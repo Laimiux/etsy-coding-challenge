@@ -50,27 +50,21 @@ public class RxUtils {
 
     /**
      * Note: do not use setOnEditorActionListener yourself in that case
-     *
-     * @param view
-     * @param actionId
-     * @return
      */
     public static Observable<KeyEvent> trackAction(EditText view, final int actionId) {
+        Utils.checkNotNull(view, "view cannot be null");
 
         final PublishSubject<KeyEvent> publishSubject = PublishSubject.create();
         view.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override public boolean onEditorAction(TextView v, int eventActionId, KeyEvent event) {
                 if (actionId == eventActionId) {
                     publishSubject.onNext(event);
-
                     return true;
                 }
-
 
                 return false;
             }
         });
-
 
         return publishSubject.asObservable();
     }
