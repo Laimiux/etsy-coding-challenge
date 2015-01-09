@@ -46,9 +46,9 @@ public class SearchContainer extends RelativeLayout {
     final private SearchResultAdapter searchResultAdapter;
 
     // Mutable state
-    private boolean isLoading;
     private boolean hasNextPage;
     private SearchQuery lastQuery;
+    private SearchQuery currentlyLoading;
 
     // Observables
     private BehaviorSubject<Boolean> observeLoading = BehaviorSubject.create(false);
@@ -57,6 +57,7 @@ public class SearchContainer extends RelativeLayout {
     private Subscription searchClickSubscription;
     private Subscription searchNetworkRequestSubscription;
     private Subscription emptyIndicatorVisibilitySubscription;
+    private Subscription restoreStateSubscription;
 
     public SearchContainer(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -123,6 +124,11 @@ public class SearchContainer extends RelativeLayout {
 
         clearNetworkRequest();
 
+        if(restoreStateSubscription != null) {
+            restoreStateSubscription.unsubscribe();
+            restoreStateSubscription = null;
+        }
+
         // just in case not to leak memory
         searchClickSubscription.unsubscribe();
         searchClickSubscription = null;
@@ -132,7 +138,7 @@ public class SearchContainer extends RelativeLayout {
     }
 
     private void loadNextPage() {
-        if (lastQuery != null && hasNextPage && !isLoading) {
+        if (lastQuery != null && hasNextPage && currentlyLoading == null) {
             Log.d("SearchContainer", "loadNextPage()");
 
             final SearchQuery searchQuery = lastQuery.getNextPageQuery();
@@ -143,7 +149,7 @@ public class SearchContainer extends RelativeLayout {
     private void performSearch(final SearchQuery searchQuery) {
         Log.d("SearchContainer", "performSearch() -> " + searchQuery);
 
-        setLoading(true);
+        setLoading(searchQuery);
 
         final boolean isNewSearchTerm = searchQuery.getPage() == 1;
         if (isNewSearchTerm) {
@@ -174,7 +180,7 @@ public class SearchContainer extends RelativeLayout {
                         hasNextPage = searchResults.getPagination().getNextPage() != null;
                         lastQuery = searchQuery;
 
-                        setLoading(false);
+                        setLoading(null);
                     }
                 }, new Action1<Throwable>() {
                     @Override public void call(Throwable throwable) {
@@ -183,7 +189,7 @@ public class SearchContainer extends RelativeLayout {
                             searchField.setEnabled(true);
                         }
 
-                        setLoading(false);
+                        setLoading(null);
                     }
                 });
     }
@@ -194,9 +200,13 @@ public class SearchContainer extends RelativeLayout {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    private void setLoading(boolean isLoading) {
-        this.isLoading = isLoading;
-        observeLoading.onNext(isLoading);
+    /**
+     * Set's currently loading query
+     * Pass null to indicate that loading has stopped
+     */
+    private void setLoading(SearchQuery currentlyLoading) {
+        this.currentlyLoading = currentlyLoading;
+        observeLoading.onNext(currentlyLoading != null);
     }
 
 
@@ -209,7 +219,7 @@ public class SearchContainer extends RelativeLayout {
 
     @Override protected Parcelable onSaveInstanceState() {
         final Parcelable parcelable = searchResultGrid.onSaveInstanceState();
-        return new SavedState(super.onSaveInstanceState(), hasNextPage, lastQuery, parcelable);
+        return new SavedState(super.onSaveInstanceState(), hasNextPage, lastQuery, currentlyLoading, parcelable);
     }
 
     @Override protected void onRestoreInstanceState(Parcelable state) {
@@ -227,49 +237,63 @@ public class SearchContainer extends RelativeLayout {
 
         if (lastQuery != null) {
             // Restore old list
-            Observable.range(1, lastQuery.getPage())
+            restoreStateSubscription = Observable.range(1, lastQuery.getPage())
                     .flatMap(new Func1<Integer, Observable<SearchResults>>() {
                         @Override public Observable<SearchResults> call(Integer page) {
                             return getSearchResultsObservable(lastQuery.withPage(page));
                         }
                     }).map(new Func1<SearchResults, List<SearchResult>>() {
-                @Override public List<SearchResult> call(SearchResults searchResults) {
-                    return searchResults.getResults();
-                }
-            }).reduce(new ArrayList<SearchResult>(), new Func2<ArrayList<SearchResult>, List<SearchResult>, ArrayList<SearchResult>>() {
-                @Override
-                public ArrayList<SearchResult> call(ArrayList<SearchResult> concatResults, List<SearchResult> searchResults) {
-                    concatResults.addAll(searchResults);
-                    return concatResults;
-                }
-            }).subscribe(new Action1<ArrayList<SearchResult>>() {
-                @Override public void call(ArrayList<SearchResult> searchResults) {
-                    searchResultAdapter.setItems(searchResults);
-                    searchResultGrid.onRestoreInstanceState(ss.gridState);
-                }
-            });
-        }
+                        @Override public List<SearchResult> call(SearchResults searchResults) {
+                            return searchResults.getResults();
+                        }
+                    }).reduce(new ArrayList<SearchResult>(), new Func2<ArrayList<SearchResult>, List<SearchResult>, ArrayList<SearchResult>>() {
+                        @Override
+                        public ArrayList<SearchResult> call(ArrayList<SearchResult> concatResults, List<SearchResult> searchResults) {
+                            concatResults.addAll(searchResults);
+                            return concatResults;
+                        }
+                    }).subscribe(new Action1<ArrayList<SearchResult>>() {
+                        @Override public void call(ArrayList<SearchResult> searchResults) {
+                            searchResultAdapter.setItems(searchResults);
+                            searchResultGrid.onRestoreInstanceState(ss.gridState);
 
-        // Restore last loading thing
+                            // Restore last loading thing
+                            if(currentlyLoading != null) {
+                                performSearch(currentlyLoading);
+                            }
+                        }
+                    });
+        } else {
+            // Restore last loading thing
+            if(currentlyLoading != null) {
+                performSearch(currentlyLoading);
+            }
+        }
     }
 
 
     static class SavedState extends BaseSavedState {
         final boolean hasNextPage;
         final SearchQuery lastQuery;
+        final SearchQuery currentlyLoading;
         final Parcelable gridState;
 
         public SavedState(Parcel source) {
             super(source);
             hasNextPage = source.readInt() == 1;
-            lastQuery = source.readParcelable(SearchQuery.class.getClassLoader());
+
+            final ClassLoader classLoader = SearchQuery.class.getClassLoader();
+            lastQuery = source.readParcelable(classLoader);
+            currentlyLoading = source.readParcelable(classLoader);
+
             gridState = source.readParcelable(null);
         }
 
-        public SavedState(Parcelable superState, boolean hasNextPage, SearchQuery lastQuery, Parcelable gridState) {
+        public SavedState(Parcelable superState, boolean hasNextPage, SearchQuery lastQuery, SearchQuery currentlyLoading, Parcelable gridState) {
             super(superState);
             this.hasNextPage = hasNextPage;
             this.lastQuery = lastQuery;
+            this.currentlyLoading = currentlyLoading;
             this.gridState = gridState;
         }
 
@@ -277,6 +301,7 @@ public class SearchContainer extends RelativeLayout {
             super.writeToParcel(dest, flags);
             dest.writeInt(hasNextPage ? 1 : 0);
             dest.writeParcelable(lastQuery, flags);
+            dest.writeParcelable(currentlyLoading, flags);
             dest.writeParcelable(gridState, flags);
         }
     }
