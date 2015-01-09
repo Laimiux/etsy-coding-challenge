@@ -11,15 +11,15 @@ import retrofit.converter.JacksonConverter;
  */
 public class EtsyHelper {
     public static final String ENDPOINT = "https://api.etsy.com/v2";
+    public static final String ETSY_KEY = "liwecjs0c3ssk6let4p1wqt9";
 
     // Thread-safe lazy initialization
     private static class Holder {
        private static EtsyHelper helper = new EtsyHelper();
     }
 
-
-    private RestAdapter adapter;
-
+    // Adapter that creates REST service instances
+    final private RestAdapter adapter;
 
     private EtsyHelper() {
         // Create our Converter

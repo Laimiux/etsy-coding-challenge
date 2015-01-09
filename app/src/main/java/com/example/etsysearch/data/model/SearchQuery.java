@@ -3,15 +3,20 @@ package com.example.etsysearch.data.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.example.etsysearch.data.api.EtsyHelper;
+
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Immutable class that handles search query parameters.
+ */
 public class SearchQuery implements Parcelable {
-    // TODO move api key decoration out of this class
-    private static final String ETSY_KEY = "liwecjs0c3ssk6let4p1wqt9";
+    // Note: current an okay place to hold these constants here,
+    // but if there will be other query types, we should move these out.
     private static final String API_KEY = "api_key";
     private static final String INCLUDES = "includes";
-    public static final String MAIN_IMAGE = "MainImage";
+    private static final String MAIN_IMAGE = "MainImage";
     private static final String KEYWORDS = "keywords";
     private static final String PAGE = "page";
 
@@ -47,7 +52,7 @@ public class SearchQuery implements Parcelable {
     public Map<String, Object> getQueryMap() {
         // todo doesn't really belong here
         Map<String, Object> queryMap = new HashMap<>();
-        queryMap.put(API_KEY, ETSY_KEY);
+        queryMap.put(API_KEY, EtsyHelper.ETSY_KEY);
         queryMap.put(INCLUDES, MAIN_IMAGE);
 
         queryMap.put(PAGE, page);
