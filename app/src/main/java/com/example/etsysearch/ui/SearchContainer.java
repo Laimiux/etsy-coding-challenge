@@ -208,10 +208,8 @@ public class SearchContainer extends RelativeLayout {
     }
 
     @Override protected Parcelable onSaveInstanceState() {
-        int index = searchResultGrid.getFirstVisiblePosition();
-        View v = searchResultGrid.getChildAt(0);
-        int top = (v == null) ? 0 : (v.getTop() - searchResultGrid.getPaddingTop());
-        return new SavedState(super.onSaveInstanceState(), hasNextPage, lastQuery);
+        final Parcelable parcelable = searchResultGrid.onSaveInstanceState();
+        return new SavedState(super.onSaveInstanceState(), hasNextPage, lastQuery, parcelable);
     }
 
     @Override protected void onRestoreInstanceState(Parcelable state) {
@@ -247,6 +245,7 @@ public class SearchContainer extends RelativeLayout {
             }).subscribe(new Action1<ArrayList<SearchResult>>() {
                 @Override public void call(ArrayList<SearchResult> searchResults) {
                     searchResultAdapter.setItems(searchResults);
+                    searchResultGrid.onRestoreInstanceState(ss.gridState);
                 }
             });
         }
@@ -258,23 +257,27 @@ public class SearchContainer extends RelativeLayout {
     static class SavedState extends BaseSavedState {
         final boolean hasNextPage;
         final SearchQuery lastQuery;
+        final Parcelable gridState;
 
         public SavedState(Parcel source) {
             super(source);
             hasNextPage = source.readInt() == 1;
             lastQuery = source.readParcelable(SearchQuery.class.getClassLoader());
+            gridState = source.readParcelable(null);
         }
 
-        public SavedState(Parcelable superState, boolean hasNextPage, SearchQuery lastQuery) {
+        public SavedState(Parcelable superState, boolean hasNextPage, SearchQuery lastQuery, Parcelable gridState) {
             super(superState);
             this.hasNextPage = hasNextPage;
             this.lastQuery = lastQuery;
+            this.gridState = gridState;
         }
 
         @Override public void writeToParcel(Parcel dest, int flags) {
             super.writeToParcel(dest, flags);
             dest.writeInt(hasNextPage ? 1 : 0);
             dest.writeParcelable(lastQuery, flags);
+            dest.writeParcelable(gridState, flags);
         }
     }
 
