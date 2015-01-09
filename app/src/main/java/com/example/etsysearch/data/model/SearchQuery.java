@@ -1,9 +1,12 @@
 package com.example.etsysearch.data.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.HashMap;
 import java.util.Map;
 
-public class SearchQuery {
+public class SearchQuery implements Parcelable {
     // TODO move api key decoration out of this class
     private static final String ETSY_KEY = "liwecjs0c3ssk6let4p1wqt9";
     private static final String API_KEY = "api_key";
@@ -13,40 +16,63 @@ public class SearchQuery {
     private static final String PAGE = "page";
 
 
-    final private Map<String, Object> queryMap = new HashMap<>();
+    final private String keywords;
+    final private Integer page;
+
 
     public SearchQuery(String searchTerms) {
-        queryMap.put(KEYWORDS, searchTerms);
+        this(searchTerms, 1);
     }
 
-    private SearchQuery(Map<String, Object> init) {
-        queryMap.putAll(init);
+    public SearchQuery(String keywords, Integer page) {
+        this.keywords = keywords;
+        this.page = page;
     }
 
-    public SearchQuery setPage(Integer page) {
-        if(page < 1) {
-            throw new IllegalStateException("page cannot be less than 1");
-        }
 
-        final SearchQuery searchQuery = new SearchQuery(queryMap);
-        searchQuery.queryMap.put(PAGE, page);
+    protected SearchQuery(Parcel in) {
+        keywords = in.readString();
+        page = in.readInt();
+    }
 
-        return searchQuery;
+
+    public SearchQuery getNextPageQuery() {
+        return new SearchQuery(keywords, page+1);
     }
 
     public Map<String, Object> getQueryMap() {
         // todo doesn't really belong here
+        Map<String, Object> queryMap = new HashMap<>();
         queryMap.put(API_KEY, ETSY_KEY);
         queryMap.put(INCLUDES, MAIN_IMAGE);
+
+        queryMap.put(PAGE, page);
+        queryMap.put(KEYWORDS, keywords);
         return queryMap;
     }
 
     public Integer getPage() {
-        final Object o = queryMap.get(PAGE);
-        if(o == null) {
-            return 1;
-        }
-
-        return (Integer) o;
+        return page;
     }
+
+    @Override public int describeContents() {
+        return 0;
+    }
+
+    @Override public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(keywords);
+        dest.writeInt(page);
+    }
+
+
+    //required field that makes Parcelables from a Parcel
+    public static final Parcelable.Creator<SearchQuery> CREATOR =
+            new Parcelable.Creator<SearchQuery>() {
+                public SearchQuery createFromParcel(Parcel in) {
+                    return new SearchQuery(in);
+                }
+                public SearchQuery[] newArray(int size) {
+                    return new SearchQuery[size];
+                }
+            };
 }

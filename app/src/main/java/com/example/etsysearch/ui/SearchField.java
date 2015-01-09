@@ -41,6 +41,7 @@ public class SearchField extends RelativeLayout {
     public SearchField(Context context, AttributeSet attrs) {
         super(context, attrs);
 
+        // We need access to activity to close the keyboard.
         if(!(context instanceof Activity)) {
             throw new IllegalStateException("Requires to have activity context");
         }
@@ -91,7 +92,7 @@ public class SearchField extends RelativeLayout {
         CharSequence query = searchQueryView.getText();
 
         if (!TextUtils.isEmpty(query)) {
-            Log.d("SearchField", "Search " + query);
+            // Currently there is no length restriction as long as not empty
             hideKeyboard();
             searchEventPublishSubject.onNext(new SearchQuery(query.toString()));
         } else {

@@ -13,9 +13,6 @@ import com.squareup.picasso.Picasso;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-/**
- * Created by laimiux on 1/7/15.
- */
 public class SearchResultItemView extends RelativeLayout {
     @InjectView(R.id.item_image) ImageView itemImage;
     @InjectView(R.id.item_title) TextView itemTitle;

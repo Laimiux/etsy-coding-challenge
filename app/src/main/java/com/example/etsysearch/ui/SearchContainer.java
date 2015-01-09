@@ -1,7 +1,10 @@
 package com.example.etsysearch.ui;
 
 import android.content.Context;
+import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.os.ParcelableCompat;
+import android.support.v4.os.ParcelableCompatCreatorCallbacks;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -11,9 +14,8 @@ import android.widget.TextView;
 
 import com.etsy.android.grid.StaggeredGridView;
 import com.example.etsysearch.R;
-import com.example.etsysearch.data.api.CachedEtsyService;
+import com.example.etsysearch.data.api.CachedSearchService;
 import com.example.etsysearch.data.api.EtsyHelper;
-import com.example.etsysearch.data.api.EtsyService;
 import com.example.etsysearch.data.model.SearchQuery;
 import com.example.etsysearch.data.model.SearchResult;
 import com.example.etsysearch.data.model.SearchResults;
@@ -40,7 +42,7 @@ public class SearchContainer extends RelativeLayout {
     @InjectView(R.id.search_result_list) StaggeredGridView searchResultList;
     @InjectView(R.id.empty_search_list_view) TextView emptySearchTextView;
 
-    final private CachedEtsyService etsyService;
+    final private CachedSearchService etsyService;
     final private SearchResultAdapter searchResultAdapter;
 
     // Mutable state
@@ -59,7 +61,7 @@ public class SearchContainer extends RelativeLayout {
     public SearchContainer(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        etsyService = CachedEtsyService.getCachedEtsyService(EtsyHelper.getEtsyService());
+        etsyService = CachedSearchService.getCachedSearchService(EtsyHelper.getEtsyService());
         searchResultAdapter = new SearchResultAdapter(context, Picasso.with(context));
     }
 
@@ -133,7 +135,7 @@ public class SearchContainer extends RelativeLayout {
         if (lastQuery != null && hasNextPage && !isLoading) {
             Log.d("SearchContainer", "loadNextPage()");
 
-            final SearchQuery searchQuery = lastQuery.setPage(lastQuery.getPage() + 1);
+            final SearchQuery searchQuery = lastQuery.getNextPageQuery();
             performSearch(searchQuery);
         }
     }
@@ -200,10 +202,59 @@ public class SearchContainer extends RelativeLayout {
     }
 
     @Override protected Parcelable onSaveInstanceState() {
-        return super.onSaveInstanceState();
+        return new SavedState(super.onSaveInstanceState(), hasNextPage, lastQuery);
     }
 
     @Override protected void onRestoreInstanceState(Parcelable state) {
-        super.onRestoreInstanceState(state);
+        //begin boilerplate code so parent classes can restore state
+        if(!(state instanceof SavedState)) {
+            super.onRestoreInstanceState(state);
+            return;
+        }
+
+        SavedState ss = (SavedState)state;
+        super.onRestoreInstanceState(ss.getSuperState());
+
+        hasNextPage = ss.hasNextPage;
+        lastQuery = ss.lastQuery;
+
+        if(lastQuery != null) {
+            // Find old list
+        }
     }
+
+
+    static class SavedState extends BaseSavedState {
+        final boolean hasNextPage;
+        final SearchQuery lastQuery;
+
+
+        public SavedState(Parcel source, ClassLoader loader) {
+            super(source);
+            hasNextPage = source.readInt() == 1;
+            lastQuery = source.readParcelable(loader);
+        }
+
+        public SavedState(Parcelable superState, boolean hasNextPage, SearchQuery lastQuery) {
+            super(superState);
+            this.hasNextPage = hasNextPage;
+            this.lastQuery = lastQuery;
+        }
+
+        @Override public void writeToParcel(Parcel dest, int flags) {
+            super.writeToParcel(dest, flags);
+            dest.writeInt(hasNextPage ? 1 : 0);
+            dest.writeParcelable(lastQuery, flags);
+        }
+    }
+
+    public static final Parcelable.Creator<SavedState> CREATOR = ParcelableCompat.newCreator(new ParcelableCompatCreatorCallbacks<SavedState>() {
+        @Override public SavedState createFromParcel(Parcel in, ClassLoader loader) {
+            return new SavedState(in, loader);
+        }
+
+        @Override public SavedState[] newArray(int size) {
+            return new SavedState[size];
+        }
+    });
 }
